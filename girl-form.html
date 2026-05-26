@@ -416,53 +416,60 @@ if (ultrasoundFile) {
     publicUrlData.publicUrl;
 }
 		if (editToken && editingRevealId) {
-        const { error } = await supabaseClient
-          .from("gender-design1")
-          .update({
-  baby_name: babyName,
-  due_date: dueDate,
-  message: message,
-  ultrasound_url: ultrasoundUrl
-})
-          .eq("edit_token", editToken);
 
-        if (error) {
-          alert("Something went wrong. Please try again.");
-          console.error(error);
-          return;
-        }
+  const updateData = {
+    baby_name: babyName,
+    due_date: dueDate,
+    message: message
+  };
 
-        const finalLink =
-          window.location.origin +
-          getRevealPagePath() +
-          "?id=" +
-          editingRevealId;
+  if (ultrasoundUrl) {
+    updateData.ultrasound_url = ultrasoundUrl;
+  }
 
-        revealLink.href = finalLink;
-        revealLink.textContent = finalLink;
+  const { error } = await supabaseClient
+    .from("gender-design1")
+    .update(updateData)
+    .eq("id", editingRevealId)
+    .eq("edit_token", editToken);
 
-        const finalEditLink =
-  window.location.origin +
-  getFormPagePath() +
-  "?edit=" +
-  editToken;
+  if (error) {
+    alert("Something went wrong. Please try again.");
+    console.error(error);
+    return;
+  }
 
-editLink.href = finalEditLink;
-editLink.textContent = finalEditLink;
+  const finalLink =
+    window.location.origin +
+    getRevealPagePath() +
+    "?id=" +
+    editingRevealId;
 
-document.getElementById("editSection").style.display = "block";
+  revealLink.href = finalLink;
+  revealLink.textContent = finalLink;
 
-resultBox.querySelector("h2").textContent =
-  "Your changes have been saved!";
+  const finalEditLink =
+    window.location.origin +
+    getFormPagePath() +
+    "?edit=" +
+    editToken;
 
-resultBox.querySelector("p").innerHTML =
-  "<strong>Share this updated reveal link with friends & family:</strong>";
+  editLink.href = finalEditLink;
+  editLink.textContent = finalEditLink;
 
-resultBox.style.display = "block";
-form.style.display = "none";
+  document.getElementById("editSection").style.display = "block";
 
-return;
-      }
+  resultBox.querySelector("h2").textContent =
+    "Your changes have been saved!";
+
+  resultBox.querySelector("p").innerHTML =
+    "<strong>Share this updated reveal link with friends & family:</strong>";
+
+  resultBox.style.display = "block";
+  form.style.display = "none";
+
+  return;
+}
 
       const id = createUniqueId();
       const newEditToken = createEditToken();
